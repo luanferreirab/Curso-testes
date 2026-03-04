@@ -1,8 +1,8 @@
 export class Produto {
 	public precoAtual: number;
 	constructor(
-		public nome: string,
-		public precoOriginal: number,
+		public readonly nome: string,
+		public readonly precoOriginal: number,
 		public estoque: number,
 		private _desconto?: number | undefined
 	) {
@@ -74,19 +74,16 @@ export class Produto {
 	}
 
 	getDescricao(): string {
-		const zero = Number(0).toFixed(2);
-		const precoAtualFormatado = this.precoAtual
-			? this.precoAtual.toFixed(2)
-			: zero;
+		const precoAtualFormatado = this.precoAtual.toFixed(2);
 		const textoBase = `Produto: ${
-			this.nome ?? "Produto Teste"
+			this.nome
 		}, Preço: R$${precoAtualFormatado}`;
 		if (this._desconto) {
 			let textoDesconto = "";
 			if (this._desconto > 1) {
-				textoDesconto = `Desconto: R$${this._desconto.toFixed(2) ?? zero}`;
+				textoDesconto = `Desconto: R$${this._desconto.toFixed(2)}`;
 			} else {
-				textoDesconto = `Desconto: ${(this._desconto * 100).toFixed(0)}%`;
+				textoDesconto = `Desconto: ${this._desconto * 100}%`;
 			}
 			return `${textoBase}, ${textoDesconto}, Preço Original: R$${this.precoOriginal.toFixed(2)}`;
 		}

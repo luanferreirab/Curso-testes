@@ -2,15 +2,26 @@ import { Produto } from "./Produto";
 
 export class Pedido {
 	public produtos: { produto: Produto; quantidade: number }[] = [];
-	public finalizado: boolean = false;
+	private _finalizado: boolean = false;
 
-	constructor(public id: number) {
+	constructor(public readonly id: number) {
 		if(id < 0) {
 			throw new Error("Id deve ser positivo, ou 0")
 		}
 	}
+	get finalizado() {
+		return this._finalizado
+	}
+
+	set finalizado(novoValor: boolean) {
+		if(this.finalizado && !novoValor) return 
+		this._finalizado = novoValor
+	}
 
 	adicionarProduto(produto: Produto, quantidade: number): void {
+		if(this.finalizado) {
+			throw new Error("O pedido já foi finalizado")
+		}
 		try {
 			produto.reduzirEstoque(quantidade);
 		} catch (error) {
@@ -19,7 +30,10 @@ export class Pedido {
 		this.produtos.push({ produto, quantidade });
 	}
 
-	deletarProduto(produto: Produto, quantidade: number): void {
+	removerProduto(produto: Produto, quantidade: number): void {
+		if(this.finalizado) {
+			throw new Error("O pedido já foi finalizado")
+		}
 		const produtoPedido = this.produtos.find((p) => p.produto === produto);
 		if (!produtoPedido) {
 			return;
@@ -35,6 +49,9 @@ export class Pedido {
 	}
 
 	finalizarPedido(): void {
+		if(this.produtos.length === 0) {
+			throw new Error("Não é possível finalizar pedido vazio")
+		}
 		this.finalizado = true;
 	}
 
@@ -50,14 +67,14 @@ export class Pedido {
 			.map(
 				(p) =>
 					`${p.produto.getDescricao()}, Quantidade: ${
-						p.quantidade > 0 ? p.quantidade : "não encontrada"
+						p.quantidade
 					}`
 			)
 			.join("\n");
 
 		return `Pedido ID: ${this.id}\nProdutos:\n${
 			this.produtos.length > 0 ? produtosDescritos : "Nenhum produto encontrado"
-		}\nTotal: R$${this.total.toFixed(2) ?? 0}
-			\nFinalizado: ${this.finalizado ? "Sim" : "NÃ£o"}`;
+		}\nTotal: R$${this.total.toFixed(2)}
+			\nFinalizado: ${this.finalizado ? "Sim" : "Não"}`;
 	}
 }

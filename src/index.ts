@@ -50,7 +50,7 @@ async function deletarProduto() {
 	const item = pedidoAtual.produtos[response.selectedIndex];
 	terminal.blue(`Produto selecionado: ${item.produto.nome}\nQuantidade:`);
 	const quantidade = parseInt((await terminal.inputField().promise) ?? "");
-	pedidoAtual.deletarProduto(item.produto, quantidade);
+	pedidoAtual.removerProduto(item.produto, quantidade);
 }
 
 async function main() {
